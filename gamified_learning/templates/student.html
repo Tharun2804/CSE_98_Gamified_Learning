@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard - Gamified Learning</title>
+    <style>
+        body { font-family: Arial; max-width: 800px; margin: 20px auto; padding: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; }
+        .stats { background: #f0f0f0; padding: 15px; border-radius: 5px; margin: 20px 0; }
+        .lesson { background: white; border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .quiz { background: #fff3cd; border: 1px solid #ffc107; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .btn { padding: 8px 15px; background: #4CAF50; color: white; text-decoration: none; border-radius: 3px; border: none; cursor: pointer; }
+        .points { color: #ff9800; font-weight: bold; }
+        .quiz-option { margin: 5px 0; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎮 Gamified Learning</h1>
+        <div>
+            <a href="/" style="margin-right: 15px; font-size: 24px;" title="Home">🏠</a>
+            <a href="/leaderboard" style="margin-right: 15px; font-size: 24px;" title="Leaderboard">🏆</a>
+            <a href="/logout" style="font-size: 24px;" title="Logout">⏻</a>
+        </div>
+    </div>
+    
+    <div class="stats">
+        <h2>Welcome, {{ student.username }}!</h2>
+        <p>Level: <strong>{{ student.level }}</strong></p>
+        <p>Points: <span class="points">{{ student.points }} 🏆</span></p>
+        <p>🔥 Current Streak: <strong style="color: #ff6b35;">{{ student.current_streak or 0 }} days</strong></p>
+        <p>⭐ Longest Streak: <strong style="color: #ffa500;">{{ student.longest_streak or 0 }} days</strong></p>
+        {% if today_activity %}
+        <p style="color: #4CAF50; margin-top: 10px;">📚 Today: {{ today_activity.lessons_completed }} lessons | 📝 {{ today_activity.quizzes_attempted }} quizzes</p>
+        {% else %}
+        <p style="color: #999; margin-top: 10px;">No activity today yet. Start learning to build your streak!</p>
+        {% endif %}
+        
+        {% if certificate %}
+        <div style="background: #d4edda; padding: 15px; margin-top: 15px; border-radius: 5px; border-left: 4px solid #28a745;">
+            <p style="color: #155724; margin: 0;">🎓 <strong>Congratulations!</strong> You've earned your certificate!</p>
+            <a href="/view_certificate" style="display: inline-block; margin-top: 10px; padding: 8px 20px; background: #28a745; color: white; text-decoration: none; border-radius: 5px;">📜 View & Print Certificate</a>
+        </div>
+        {% elif course_completed %}
+        <div style="background: #fff3cd; padding: 15px; margin-top: 15px; border-radius: 5px; border-left: 4px solid #ffa500;">
+            <p style="color: #856404; margin: 0;">🎉 <strong>Course Completed!</strong> Generate your certificate now!</p>
+            <a href="/generate_certificate" style="display: inline-block; margin-top: 10px; padding: 8px 20px; background: #ffa500; color: white; text-decoration: none; border-radius: 5px;">🎓 Generate Certificate</a>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div style="display: flex; gap: 15px; margin: 20px 0;">
+        <a href="#quizzes" style="padding: 12px 25px; background: #ff9800; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">📝 Quizzes</a>
+        <a href="#videos" style="padding: 12px 25px; background: #2196F3; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">📹 Videos</a>
+        <a href="#presentations" style="padding: 12px 25px; background: #4CAF50; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">📊 Presentations</a>
+        <a href="/games" style="padding: 12px 25px; background: #e91e63; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">🎮 Games</a>
+    </div>
+    
+    <h2 id="quizzes">Quizzes</h2>
+    {% for quiz in quizzes %}
+    <div class="quiz">
+        <h3>{{ quiz.title }}</h3>
+        <p>{{ quiz.question }}</p>
+        {% if quiz.total_attempts > 0 %}
+            <p><strong>Your Score: {{ "%.0f"|format(quiz.score) }}%</strong></p>
+            {% if quiz.can_attempt %}
+                <p style="color: red;">Score below 40% - You can reattempt!</p>
+            {% else %}
+                <p style="color: green;">Quiz passed! Score above 40%</p>
+            {% endif %}
+        {% endif %}
+        {% if quiz.can_attempt %}
+        <form method="POST" action="/attempt_quiz/{{ quiz.id }}">
+            <div class="quiz-option"><input type="radio" name="answer" value="A" required> A) {{ quiz.option_a }}</div>
+            <div class="quiz-option"><input type="radio" name="answer" value="B"> B) {{ quiz.option_b }}</div>
+            <div class="quiz-option"><input type="radio" name="answer" value="C"> C) {{ quiz.option_c }}</div>
+            <div class="quiz-option"><input type="radio" name="answer" value="D"> D) {{ quiz.option_d }}</div>
+            <p>Reward: +{{ quiz.points }} points</p>
+            <button type="submit" class="btn">Submit Answer</button>
+        </form>
+        {% endif %}
+    </div>
+    {% endfor %}
+    
+    <h2 id="videos">Videos</h2>
+    {% for video in videos %}
+    <div class="lesson">
+        <h3>{{ video.title }}</h3>
+        <video width="100%" controls>
+            <source src="/uploads/{{ video.url }}" type="video/mp4">
+        </video>
+    </div>
+    {% endfor %}
+    
+    <h2 id="presentations">Presentations</h2>
+    {% for ppt in presentations %}
+    <div class="lesson">
+        <h3>{{ ppt.title }}</h3>
+        <a href="/uploads/{{ ppt.file_path }}" target="_blank" class="btn">View Presentation</a>
+    </div>
+    {% endfor %}
+    
+    <h2>Available Lessons</h2>
+    {% for lesson in lessons %}
+    <div class="lesson">
+        <h3>{{ lesson.title }}</h3>
+        <p>{{ lesson.description }}</p>
+        <p>Reward: +{{ lesson.points }} points</p>
+        <a href="/complete/{{ lesson.id }}" class="btn">Complete Lesson</a>
+    </div>
+    {% endfor %}
+</body>
+</html>

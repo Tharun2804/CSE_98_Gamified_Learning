@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teacher Details - Admin</title>
+    <style>
+        body { font-family: Arial; max-width: 1000px; margin: 20px auto; padding: 20px; background: #f5f5f5; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .back-btn { padding: 10px 20px; background: #667eea; color: white; text-decoration: none; border-radius: 5px; }
+
+        .profile-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+        .avatar { font-size: 70px; }
+        .profile-info h2 { margin: 0 0 10px 0; color: #333; }
+        .profile-info p { margin: 5px 0; color: #555; font-size: 15px; }
+        .badge { display: inline-block; padding: 4px 12px; background: #4CAF50; color: white; border-radius: 20px; font-size: 13px; margin-left: 10px; }
+
+        .section {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section h3 { margin: 0 0 20px 0; color: #333; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; }
+
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f8f8f8; color: #555; font-weight: bold; }
+        tr:hover { background: #fafafa; }
+
+        .quiz-card {
+            background: #fff9e6;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .quiz-card h4 { margin: 0 0 10px 0; color: #333; }
+        .quiz-card .question { font-weight: bold; margin-bottom: 10px; color: #555; }
+        .options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+        .option { padding: 8px 12px; background: #f5f5f5; border-radius: 5px; font-size: 14px; }
+        .option.correct { background: #d4edda; color: #155724; font-weight: bold; }
+        .meta { font-size: 13px; color: #888; }
+
+        .media-card {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .media-card h4 { margin: 0; color: #333; }
+        .media-card .date { font-size: 13px; color: #888; }
+        .view-btn { padding: 6px 15px; background: #2196F3; color: white; text-decoration: none; border-radius: 5px; font-size: 13px; }
+
+        .empty { color: #999; text-align: center; padding: 20px; font-style: italic; }
+        .count-badge { background: #667eea; color: white; padding: 3px 10px; border-radius: 20px; font-size: 13px; margin-left: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>⚙️ Teacher Details</h1>
+    <a href="/admin" class="back-btn">← Back to Admin</a>
+</div>
+
+<!-- Teacher Profile -->
+<div class="profile-card">
+    <div class="avatar">👨‍🏫</div>
+    <div class="profile-info">
+        <h2>{{ teacher.full_name or teacher.username }} <span class="badge">Teacher</span></h2>
+        <p>👤 Username: <strong>{{ teacher.username }}</strong></p>
+        <p>📧 Email: <strong>{{ teacher.email or 'Not provided' }}</strong></p>
+        <p>🏫 School: <strong>{{ teacher.school_name or 'Not provided' }}</strong></p>
+        <p>🏢 Department: <strong>{{ teacher.department or 'Not provided' }}</strong></p>
+        <p>🪪 Employee ID: <strong>{{ teacher.employee_id or 'Not provided' }}</strong></p>
+        <p>✅ Status: <strong style="color: {% if teacher.approved %}green{% else %}orange{% endif %};">
+            {% if teacher.approved %}Approved{% else %}Pending{% endif %}
+        </strong></p>
+    </div>
+</div>
+
+<!-- Quizzes -->
+<div class="section">
+    <h3>📝 Quizzes Created <span class="count-badge">{{ quizzes|length }}</span></h3>
+    {% if quizzes %}
+        {% for quiz in quizzes %}
+        <div class="quiz-card">
+            <h4>{{ quiz.title }}</h4>
+            <div class="question">Q: {{ quiz.question }}</div>
+            <div class="options">
+                <div class="option {% if quiz.correct_answer == 'A' %}correct{% endif %}">A) {{ quiz.option_a }}</div>
+                <div class="option {% if quiz.correct_answer == 'B' %}correct{% endif %}">B) {{ quiz.option_b }}</div>
+                <div class="option {% if quiz.correct_answer == 'C' %}correct{% endif %}">C) {{ quiz.option_c }}</div>
+                <div class="option {% if quiz.correct_answer == 'D' %}correct{% endif %}">D) {{ quiz.option_d }}</div>
+            </div>
+            <div class="meta">✅ Correct Answer: <strong>{{ quiz.correct_answer }}</strong> &nbsp;|&nbsp; 🏆 Points: <strong>{{ quiz.points }}</strong> &nbsp;|&nbsp; 📅 {{ quiz.created_at.strftime('%d %b %Y, %I:%M %p') }}</div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p class="empty">No quizzes created yet.</p>
+    {% endif %}
+</div>
+
+<!-- Videos -->
+<div class="section">
+    <h3>📹 Videos Posted <span class="count-badge">{{ videos|length }}</span></h3>
+    {% if videos %}
+        {% for video in videos %}
+        <div class="media-card" style="flex-direction: column; align-items: flex-start;">
+            <div style="display:flex; justify-content:space-between; width:100%; align-items:center; margin-bottom:10px;">
+                <div>
+                    <h4>📹 {{ video.title }}</h4>
+                    <div class="date">📅 {{ video.created_at.strftime('%d %b %Y, %I:%M %p') }}</div>
+                </div>
+                <a href="/uploads/{{ video.url }}" target="_blank" class="view-btn">⬇ Download</a>
+            </div>
+            <video width="100%" controls style="border-radius:8px;">
+                <source src="/uploads/{{ video.url }}" type="video/mp4">
+            </video>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p class="empty">No videos posted yet.</p>
+    {% endif %}
+</div>
+
+<!-- Presentations -->
+<div class="section">
+    <h3>📊 Presentations Posted <span class="count-badge">{{ presentations|length }}</span></h3>
+    {% if presentations %}
+        {% for ppt in presentations %}
+        <div class="media-card">
+            <div>
+                <h4>📊 {{ ppt.title }}</h4>
+                <div class="date">📅 {{ ppt.created_at.strftime('%d %b %Y, %I:%M %p') }}</div>
+            </div>
+            <a href="/uploads/{{ ppt.file_path }}" target="_blank" class="view-btn">👁 View</a>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p class="empty">No presentations posted yet.</p>
+    {% endif %}
+</div>
+
+</body>
+</html>

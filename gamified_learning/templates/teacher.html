@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teacher Dashboard</title>
+    <style>
+        body { font-family: Arial; max-width: 900px; margin: 20px auto; padding: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #4CAF50; color: white; }
+        .form-section { background: #f9f9f9; padding: 20px; margin: 20px 0; border-radius: 5px; }
+        input, textarea, select { width: 100%; padding: 8px; margin: 5px 0; }
+        button { padding: 10px 20px; background: #4CAF50; color: white; border: none; cursor: pointer; }
+        .content-list { background: white; padding: 15px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>👨🏫 Teacher Dashboard</h1>
+        <div>
+            <a href="/" style="margin-right: 15px; font-size: 24px;" title="Home">🏠</a>
+            <a href="/leaderboard" style="margin-right: 15px; font-size: 24px;" title="Leaderboard">🏆</a>
+            <a href="/logout" style="font-size: 24px;" title="Logout">⏻</a>
+        </div>
+    </div>
+    
+    <h2>Welcome, {{ teacher.username }}!</h2>
+    
+    <div style="display: flex; gap: 15px; margin: 20px 0;">
+        <a href="#create-quiz" style="padding: 12px 25px; background: #ff9800; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">📝 Create Quiz</a>
+        <a href="#post-video" style="padding: 12px 25px; background: #2196F3; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">📹 Post Video</a>
+        <a href="#post-ppt" style="padding: 12px 25px; background: #4CAF50; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">📊 Post Presentation</a>
+        <a href="#student-progress" style="padding: 12px 25px; background: #9c27b0; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">👥 Student Progress</a>
+    </div>
+    
+    <div class="form-section" id="create-quiz">
+        <h3>Create Quiz</h3>
+        <form method="POST" action="/create_quiz">
+            <input type="text" name="title" placeholder="Quiz Title" required>
+            <textarea name="question" placeholder="Question" rows="3" required></textarea>
+            <input type="text" name="option_a" placeholder="Option A" required>
+            <input type="text" name="option_b" placeholder="Option B" required>
+            <input type="text" name="option_c" placeholder="Option C" required>
+            <input type="text" name="option_d" placeholder="Option D" required>
+            <select name="correct_answer" required>
+                <option value="">Select Correct Answer</option>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+                <option value="D">D</option>
+            </select>
+            <input type="number" name="points" placeholder="Points" value="10" required>
+            <button type="submit">Create Quiz</button>
+        </form>
+    </div>
+    
+    <div class="form-section" id="post-video">
+        <h3>Post Video</h3>
+        <form method="POST" action="/post_video" enctype="multipart/form-data">
+            <input type="text" name="title" placeholder="Video Title" required>
+            <input type="file" name="video" accept="video/*" required>
+            <button type="submit">Post Video</button>
+        </form>
+    </div>
+    
+    <div class="form-section" id="post-ppt">
+        <h3>Post Presentation</h3>
+        <form method="POST" action="/post_presentation" enctype="multipart/form-data">
+            <input type="text" name="title" placeholder="Presentation Title" required>
+            <input type="file" name="presentation" accept=".ppt,.pptx,.pdf" required>
+            <button type="submit">Post Presentation</button>
+        </form>
+    </div>
+    
+    <h3>My Quizzes</h3>
+    {% for quiz in quizzes %}
+    <div class="content-list">
+        <strong>{{ quiz.title }}</strong> - {{ quiz.points }} points
+    </div>
+    {% endfor %}
+    
+    <h3>My Videos</h3>
+    {% for video in videos %}
+    <div class="content-list">
+        <strong>{{ video.title }}</strong>
+    </div>
+    {% endfor %}
+    
+    <h3>My Presentations</h3>
+    {% for ppt in presentations %}
+    <div class="content-list">
+        <strong>{{ ppt.title }}</strong>
+    </div>
+    {% endfor %}
+    
+    <h3 id="student-progress">Student Progress</h3>
+    <table>
+        <tr>
+            <th>Student</th>
+            <th>Level</th>
+            <th>Points</th>
+            <th>🔥 Streak</th>
+        </tr>
+        {% for student in students %}
+        <tr>
+            <td>{{ student.username }}</td>
+            <td>{{ student.level }}</td>
+            <td>{{ student.points }}</td>
+            <td>{{ student.current_streak or 0 }} days</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

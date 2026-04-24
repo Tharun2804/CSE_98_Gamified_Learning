@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gamified Learning Platform</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; height: 100vh; overflow: hidden; background: #f0f4ff; }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 10px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo { color: white; font-size: 20px; font-weight: bold; }
+        .nav-buttons a {
+            color: white; text-decoration: none; padding: 7px 18px;
+            margin-left: 10px; border-radius: 20px; font-size: 14px; transition: all 0.3s;
+        }
+        .nav-buttons .login  { background: rgba(255,255,255,0.2); }
+        .nav-buttons .register { background: #ff6b6b; }
+
+        .hero {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white; text-align: center; padding: 94px 20px 89px;
+        }
+        .hero h1 { font-size: 26px; margin-bottom: 6px; }
+        .hero p  { font-size: 13px; opacity: 0.9; margin-bottom: 12px; }
+        .hero-buttons a {
+            display: inline-block; padding: 8px 22px; margin: 3px;
+            border-radius: 20px; text-decoration: none; font-size: 13px;
+        }
+        .btn-primary  { background: #ff6b6b; color: white; }
+        .btn-secondary { background: white; color: #667eea; }
+
+        .features { padding: 79px 30px; background: #f8f9fa; }
+        .features h2 { text-align: center; font-size: 16px; margin-bottom: 10px; color: #333; }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .feature-card {
+            background: white; padding: 12px 8px; border-radius: 10px;
+            text-align: center; box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+            cursor: pointer; transition: all 0.2s;
+        }
+        .feature-card:hover { transform: translateY(-4px); box-shadow: 0 8px 16px rgba(0,0,0,0.15); }
+        .feature-icon { font-size: 26px; margin-bottom: 6px; }
+        .feature-card h3 { color: #667eea; font-size: 12px; margin-bottom: 4px; }
+        .feature-card p  { color: #666; font-size: 11px; line-height: 1.4; }
+
+        .stats {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white; padding: 77px 30px; text-align: center;
+        }
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 10px; max-width: 700px; margin: 0 auto;
+        }
+        .stat-item h3 { font-size: 22px; margin-bottom: 2px; }
+        .stat-item p  { font-size: 12px; opacity: 0.9; }
+
+        footer { background: #2c3e50; color: white; text-align: center; padding: 8px; font-size: 12px; }
+
+        /* Certificate Modal */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%; background: rgba(0,0,0,0.6);
+            z-index: 1000; justify-content: center; align-items: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: white; border-radius: 10px; padding: 15px;
+            max-width: 580px; width: 90%; position: relative;
+        }
+        .modal-close {
+            position: absolute; top: 8px; right: 12px; font-size: 20px;
+            cursor: pointer; background: none; border: none; color: #333;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo">🎮 Gamified Learning</div>
+        <div class="nav-buttons">
+            {% if logged_in %}
+            <a href="/logout" class="register">Logout</a>
+            {% else %}
+            <a href="/login" class="login">Login</a>
+            <a href="/register" class="register">Register</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <section class="hero">
+        <h1>Learn, Play, and Enjoy!</h1>
+        <p>Transform education into an exciting adventure with our gamified learning platform</p>
+        <div class="hero-buttons">
+            <a href="/register" class="btn-primary">Get Started</a>
+            <a href="/login" class="btn-secondary">Sign In</a>
+        </div>
+    </section>
+
+    <section class="features">
+        <h2>Why Choose Us?</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3>Quizzes</h3>
+                <p>Earn points for correct answers</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🏆</div>
+                <h3>Leaderboard</h3>
+                <p>Compete and climb rankings</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📹</div>
+                <h3>Video Lessons</h3>
+                <p>Quality educational videos</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Progress</h3>
+                <p>Track your learning journey</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">👨🏫</div>
+                <h3>Teachers</h3>
+                <p>Create content and track students</p>
+            </div>
+            <div class="feature-card" onclick="showCertModal()">
+                <div class="feature-icon">🎓</div>
+                <h3>Certificate</h3>
+                <p>Earn official certificate on completion</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="stats">
+        <div class="stats-grid">
+            <div class="stat-item"><h3>1000+</h3><p>Active Students</p></div>
+            <div class="stat-item"><h3>50+</h3><p>Expert Teachers</p></div>
+            <div class="stat-item"><h3>500+</h3><p>Quizzes Available</p></div>
+            <div class="stat-item"><h3>95%</h3><p>Success Rate</p></div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Gamified Learning Platform. All rights reserved.</p>
+    </footer>
+
+    <!-- Certificate Modal -->
+    <div class="modal-overlay" id="certModal" onclick="hideCertModal()">
+        <div class="modal-box" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="hideCertModal()">✕</button>
+            <div style="border:6px solid #2e8b57; border-radius:5px; padding:15px; text-align:center;">
+                <div style="border:2px solid gold; padding:15px;">
+                    <div style="font-size:12px; color:#2e8b57; font-weight:bold; font-family:Georgia;">
+                        Gamified Environmental Learning Platform<br>
+                        Presidency School of Computer Science and Engineering<br>
+                        Presidency University
+                    </div>
+                    <div style="font-size:20px; font-weight:bold; margin:10px 0; font-family:Georgia;">CERTIFICATE OF COMPLETION</div>
+                    <p style="font-family:Georgia; font-size:13px;">This is to certify that</p>
+                    <div style="font-size:22px; font-style:italic; margin:8px 0; border-bottom:2px solid #aaa; display:inline-block; padding:4px 20px; font-family:Georgia;">Your Name Here</div>
+                    <p style="font-family:Georgia; font-size:13px;">has successfully completed the course</p>
+                    <div style="font-size:14px; font-weight:bold; background:#2e8b57; color:white; padding:6px 16px; display:inline-block; margin:8px 0;">Environmental Awareness &amp; Sustainability</div>
+                    <p style="font-family:Georgia; font-size:11px;">by successfully completing all lessons, quizzes and learning activities.</p>
+                    <div style="margin-top:15px; display:flex; justify-content:space-between; align-items:flex-end;">
+                        <div style="font-size:12px; font-family:Georgia;">Awarded on: <span id="cert-date"></span></div>
+                        <div style="font-size:28px;">🏆</div>
+                        <div style="text-align:center;">
+                            <div style="font-family:cursive; font-size:16px;">C. Tharun Sai</div>
+                            <div style="border-top:1px solid black; width:130px; margin:auto;"></div>
+                            <div style="font-size:11px; font-family:Georgia;">Course Director</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align:center; margin-top:12px;">
+                <a href="/register" style="display:inline-block; padding:8px 20px; background:#2e8b57; color:white; text-decoration:none; border-radius:20px; font-size:13px; margin:4px;">Earn This!</a>
+                <button onclick="hideCertModal()" style="padding:8px 20px; background:#999; color:white; border:none; border-radius:20px; font-size:13px; cursor:pointer; margin:4px;">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const today = new Date();
+        const options = { day: 'numeric', month: 'long', year: 'numeric' };
+        document.getElementById('cert-date').textContent = today.toLocaleDateString('en-IN', options);
+        function showCertModal() { document.getElementById('certModal').classList.add('active'); }
+        function hideCertModal() { document.getElementById('certModal').classList.remove('active'); }
+    </script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Save the Earth Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h1>🌍 Save the Earth</h1>
+    <p>Drag good and bad items to the Earth</p>
+
+    <div class="game-area">
+
+        <!-- Items Panel -->
+        <div class="items">
+
+            <!-- BAD ITEMS -->
+            <img src="images/factory.jpg" class="item harmful" draggable="true" alt="Factory">
+            <img src="images/factory2.png" class="item harmful" draggable="true" alt="More Factory">
+            <img src="images/plastic.jpg" class="item harmful" draggable="true" alt="Plastic">
+            <img src="images/car.jpg" class="item harmful" draggable="true" alt="Car Smoke">
+
+            <!-- GOOD ITEMS -->
+            <img src="images/tree.jpg" class="item good" draggable="true" alt="Tree">
+            <img src="images/tree2.png" class="item good" draggable="true" alt="More Trees">
+            <img src="images/plant.png" class="item good" draggable="true" alt="Plant">
+            <img src="images/windmill.jpg" class="item good" draggable="true" alt="Windmill">
+            <img src="images/solar.png" class="item good" draggable="true" alt="Solar Panel">
+
+        </div>
+
+        <!-- Earth Drop Zone -->
+        <div id="earth-zone">
+            <img src="images/earth.jpg" id="earth" alt="Earth">
+            <img src="images/danger.jpg" id="danger" alt="Danger">
+            <p id="message"></p>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

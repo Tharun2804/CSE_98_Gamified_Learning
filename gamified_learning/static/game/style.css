@@ -1,0 +1,118 @@
+/* RESET */
+* {
+    box-sizing: border-box;
+}
+
+/* PAGE BACKGROUND */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: white; /* <-- changed to white */
+    text-align: center;
+}
+
+/* TITLE */
+h1 {
+    margin-top: 10px;
+    font-size: 32px;
+    color: #1a237e;
+}
+
+p {
+    font-size: 18px;
+    color: #333;
+}
+
+/* GAME LAYOUT */
+.game-area {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 30px;
+}
+
+/* ITEMS PANEL */
+.items {
+    width: 40%;
+}
+
+/* DRAGGABLE ITEMS */
+.item {
+    width: 120px;           /* <-- increased size from 90px to 120px */
+    height: 120px;          /* optional, makes square for better display */
+    margin: 12px;
+    cursor: grab;
+    transition: transform 0.2s;
+    border-radius: 12px;
+    padding: 5px;
+    background: white;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.item:hover {
+    transform: scale(1.15); /* slightly bigger on hover */
+}
+
+/* EARTH ZONE */
+#earth-zone {
+    width: 320px;
+    height: 320px;
+    border-radius: 50%;
+    border: 4px dashed #2c3e50;
+    background: radial-gradient(circle, #cce7ff, #87ceeb);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+/* EARTH IMAGE */
+#earth {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 0 30px rgba(0, 136, 255, 0.6);
+}
+
+/* DANGER ICON */
+#danger {
+    width: 80px;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    display: none;
+}
+
+/* MESSAGE BELOW EARTH */
+#message {
+    position: absolute;
+    bottom: -40px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* GOOD / BAD FEEDBACK */
+.good-msg {
+    color: green;
+}
+
+.bad-msg {
+    color: red;
+}
+
+/* RESPONSIVE FOR SMALL SCREENS */
+@media (max-width: 768px) {
+    .game-area {
+        flex-direction: column;
+    }
+
+    .items {
+        width: 100%;
+    }
+
+    #earth-zone {
+        margin-top: 30px;
+    }
+}

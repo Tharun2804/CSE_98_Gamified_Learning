@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registration - Gamified Learning</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: Arial;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(180deg, #87CEEB 0%, #98FB98 60%, #228B22 100%);
+            overflow-x: hidden;
+            padding: 30px 0;
+        }
+
+        .tree { position: fixed; bottom: 0; font-size: 80px; animation: sway 3s ease-in-out infinite; z-index: 0; }
+        .tree:nth-child(1) { left: 2%;  font-size: 100px; animation-delay: 0s; }
+        .tree:nth-child(2) { left: 10%; font-size: 70px;  animation-delay: 0.5s; }
+        .tree:nth-child(3) { left: 18%; font-size: 90px;  animation-delay: 1s; }
+        .tree:nth-child(4) { left: 75%; font-size: 85px;  animation-delay: 0.3s; }
+        .tree:nth-child(5) { left: 83%; font-size: 75px;  animation-delay: 0.8s; }
+        .tree:nth-child(6) { left: 91%; font-size: 95px;  animation-delay: 1.2s; }
+        .tree:nth-child(7) { left: 28%; font-size: 60px;  animation-delay: 0.2s; }
+        .tree:nth-child(8) { left: 68%; font-size: 65px;  animation-delay: 0.7s; }
+
+        @keyframes sway {
+            0%, 100% { transform: rotate(-2deg); }
+            50%       { transform: rotate(2deg); }
+        }
+
+        .animal { position: fixed; font-size: 40px; z-index: 1; }
+
+        .bird  { animation: fly 8s linear infinite; top: 15%; }
+        .bird2 { animation: fly 12s linear infinite; top: 25%; animation-delay: 3s; font-size: 30px; }
+        .bird3 { animation: fly2 10s linear infinite; top: 10%; animation-delay: 1s; }
+
+        @keyframes fly {
+            0%   { left: -5%;  transform: scaleX(1); }
+            49%  { transform: scaleX(1); }
+            50%  { left: 105%; transform: scaleX(-1); }
+            100% { left: -5%;  transform: scaleX(-1); }
+        }
+        @keyframes fly2 {
+            0%   { left: 105%; transform: scaleX(-1); }
+            49%  { transform: scaleX(-1); }
+            50%  { left: -5%;  transform: scaleX(1); }
+            100% { left: 105%; transform: scaleX(1); }
+        }
+
+        .rabbit  { bottom: 5%; animation: hop 4s ease-in-out infinite; left: 25%; }
+        .rabbit2 { bottom: 5%; animation: hop 5s ease-in-out infinite; left: 65%; animation-delay: 1s; }
+
+        @keyframes hop {
+            0%, 100% { transform: translateY(0); }
+            25%       { transform: translateY(-20px); }
+            50%       { transform: translateY(0); }
+            75%       { transform: translateY(-10px); }
+        }
+
+        .butterfly  { animation: flutter 6s ease-in-out infinite; top: 40%; left: 20%; }
+        .butterfly2 { animation: flutter2 7s ease-in-out infinite; top: 50%; left: 70%; }
+
+        @keyframes flutter {
+            0%, 100% { transform: translate(0, 0); }
+            25%       { transform: translate(30px, -30px); }
+            50%       { transform: translate(60px, 0px); }
+            75%       { transform: translate(30px, 30px); }
+        }
+        @keyframes flutter2 {
+            0%, 100% { transform: translate(0, 0); }
+            33%       { transform: translate(-40px, -20px); }
+            66%       { transform: translate(20px, 20px); }
+        }
+
+        .deer { bottom: 3%; left: 5%; font-size: 55px; animation: graze 5s ease-in-out infinite; }
+        @keyframes graze {
+            0%, 100% { transform: translateX(0); }
+            50%       { transform: translateX(15px); }
+        }
+
+        .sun { position: fixed; top: 30px; right: 80px; font-size: 60px; animation: spin 20s linear infinite; z-index: 0; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        .cloud  { position: fixed; font-size: 50px; animation: drift 15s linear infinite; top: 8%; z-index: 0; opacity: 0.85; }
+        .cloud2 { top: 18%; animation-duration: 20s; animation-delay: 5s; font-size: 40px; }
+        @keyframes drift {
+            0%   { left: -10%; }
+            100% { left: 110%; }
+        }
+
+        .register-box {
+            position: relative;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.92);
+            padding: 40px 35px;
+            border-radius: 20px;
+            width: 460px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            backdrop-filter: blur(5px);
+        }
+
+        .register-box h1 { text-align: center; color: #2e8b57; margin-bottom: 25px; font-size: 28px; }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 15px;
+            box-sizing: border-box;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 12px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+        button[type="submit"]:hover { background: #388E3C; }
+
+        a { display: block; text-align: center; margin-top: 15px; color: #667eea; }
+        .error   { color: red;   text-align: center; margin-bottom: 10px; }
+        .success { color: green; text-align: center; margin-bottom: 10px; }
+        .hidden  { display: none; }
+    </style>
+    <script>
+        function toggleFields() {
+            var role = document.getElementById('role').value;
+            document.getElementById('student-fields').style.display = role === 'student' ? 'block' : 'none';
+            document.getElementById('teacher-fields').style.display = role === 'teacher' ? 'block' : 'none';
+            document.getElementById('parent-fields').style.display  = role === 'parent'  ? 'block' : 'none';
+        }
+    </script>
+</head>
+<body>
+
+    <div class="sun">☀️</div>
+    <div class="cloud">☁️</div>
+    <div class="cloud cloud2">☁️</div>
+
+    <div class="tree">🌳</div>
+    <div class="tree">🌲</div>
+    <div class="tree">🌳</div>
+    <div class="tree">🌲</div>
+    <div class="tree">🌳</div>
+    <div class="tree">🌲</div>
+    <div class="tree">🌿</div>
+    <div class="tree">🌴</div>
+
+    <div class="animal bird">🐦</div>
+    <div class="animal bird2">🦅</div>
+    <div class="animal bird3">🐦</div>
+    <div class="animal butterfly">🦋</div>
+    <div class="animal butterfly2">🦋</div>
+    <div class="animal rabbit">🐇</div>
+    <div class="animal rabbit2">🐇</div>
+    <div class="animal deer">🦌</div>
+
+    <div class="register-box">
+        <h1>🎮 Register</h1>
+        {% if error %}
+        <p class="error">{{ error }}</p>
+        {% endif %}
+        {% if success %}
+        <p class="success">{{ success }}</p>
+        {% endif %}
+        <form method="POST">
+            <select id="role" name="role" onchange="toggleFields()" required>
+                <option value="">Select Role</option>
+                <option value="student">🎓 Student</option>
+                <option value="teacher">👨🏫 Teacher</option>
+                <option value="parent">👪 Parent</option>
+            </select>
+
+            <input type="text"  name="full_name" placeholder="Full Name" required>
+            <input type="text"  name="username"  placeholder="Username" required>
+            <input type="email" name="email"     placeholder="Email Address" required>
+            <input type="password" name="password"         placeholder="Password" required>
+            <input type="password" name="confirm_password" placeholder="Confirm Password" required>
+
+            <div id="student-fields" class="hidden">
+                <input type="text" name="student_id"     placeholder="Student ID / Roll Number">
+                <input type="text" name="school_name"    placeholder="School / College Name">
+                <input type="text" name="class_grade"    placeholder="Class / Grade / Semester">
+                <input type="text" name="parent_contact" placeholder="Parent Email or Mobile Number">
+                <input type="date" name="dob">
+            </div>
+
+            <div id="teacher-fields" class="hidden">
+                <input type="text" name="employee_id" placeholder="Employee ID / Faculty ID">
+                <input type="text" name="school_name" placeholder="School / College Name">
+                <input type="text" name="department"  placeholder="Department / Subject">
+            </div>
+
+            <div id="parent-fields" class="hidden">
+                <input type="text" name="linked_student_id" placeholder="Student ID / Roll Number (to link with child)">
+                <select name="relationship">
+                    <option value="">Select Relationship</option>
+                    <option value="Father">Father</option>
+                    <option value="Mother">Mother</option>
+                    <option value="Guardian">Guardian</option>
+                </select>
+                <input type="text" name="parent_contact" placeholder="Contact Number">
+            </div>
+
+            <button type="submit">Register</button>
+        </form>
+        <a href="/login">Already have an account? Login</a>
+    </div>
+
+</body>
+</html>

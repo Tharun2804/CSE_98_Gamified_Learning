@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Email Settings - Admin</title>
+    <style>
+        body { font-family: Arial; max-width: 600px; margin: 50px auto; padding: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        input { width: 100%; padding: 10px; margin: 10px 0; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #4CAF50; color: white; border: none; cursor: pointer; margin-top: 10px; }
+        .info { background: #e3f2fd; padding: 15px; border-left: 4px solid #2196F3; margin: 20px 0; }
+        .success { background: #d4edda; padding: 15px; border-left: 4px solid #28a745; margin: 20px 0; }
+        .error { background: #f8d7da; padding: 15px; border-left: 4px solid #dc3545; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📧 Email Settings</h1>
+        <a href="/admin">← Back</a>
+    </div>
+    
+    <div class="info">
+        <strong>Gmail Setup Instructions:</strong>
+        <ol>
+            <li>Go to your Google Account settings</li>
+            <li>Enable 2-Step Verification</li>
+            <li>Generate an App Password</li>
+            <li>Use that App Password below</li>
+        </ol>
+    </div>
+    
+    {% if success %}
+    <div class="success">{{ success }}</div>
+    {% endif %}
+    
+    {% if error %}
+    <div class="error">{{ error }}</div>
+    {% endif %}
+    
+    <form method="POST">
+        <label><strong>Email Address (Gmail):</strong></label>
+        <input type="email" name="email_user" placeholder="your-email@gmail.com" value="{{ config.email_user or '' }}" required>
+        
+        <label><strong>App Password:</strong></label>
+        <input type="password" name="email_password" placeholder="16-character app password" required>
+        
+        <label><strong>From Name:</strong></label>
+        <input type="text" name="email_from" placeholder="Gamified Learning Platform" value="{{ config.email_from or 'Gamified Learning Platform' }}" required>
+        
+        <button type="submit">Save Email Settings</button>
+    </form>
+    
+    <hr style="margin: 30px 0;">
+    
+    <h3>Test Email</h3>
+    <form method="POST" action="/admin/test_email">
+        <input type="email" name="test_email" placeholder="Enter email to test" required>
+        <button type="submit" style="background: #2196F3;">Send Test Email</button>
+    </form>
+</body>
+</html>

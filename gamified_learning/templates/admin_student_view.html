@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Details - Admin</title>
+    <style>
+        body { font-family: Arial; max-width: 1000px; margin: 20px auto; padding: 20px; background: #f5f5f5; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .back-btn { padding: 10px 20px; background: #667eea; color: white; text-decoration: none; border-radius: 5px; }
+
+        .profile-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+        .avatar { font-size: 70px; }
+        .profile-info h2 { margin: 0 0 10px 0; color: #333; }
+        .profile-info p { margin: 5px 0; color: #555; font-size: 15px; }
+        .badge { display: inline-block; padding: 4px 12px; background: #2196F3; color: white; border-radius: 20px; font-size: 13px; margin-left: 10px; }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .stat-box {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .stat-box h3 { font-size: 32px; margin: 0 0 5px 0; }
+        .stat-box p { margin: 0; color: #666; font-size: 14px; }
+
+        .section {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section h3 { margin: 0 0 20px 0; color: #333; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; }
+
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f8f8f8; color: #555; font-weight: bold; }
+        tr:hover { background: #fafafa; }
+
+        .correct { color: green; font-weight: bold; }
+        .wrong { color: red; font-weight: bold; }
+        .empty { color: #999; text-align: center; padding: 20px; font-style: italic; }
+        .count-badge { background: #667eea; color: white; padding: 3px 10px; border-radius: 20px; font-size: 13px; margin-left: 10px; }
+        .streak-fire { color: #ff6b35; font-size: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>⚙️ Student Details</h1>
+    <a href="/admin" class="back-btn">← Back to Admin</a>
+</div>
+
+<!-- Student Profile -->
+<div class="profile-card">
+    <div class="avatar">🎓</div>
+    <div class="profile-info">
+        <h2>{{ student.full_name or student.username }} <span class="badge">Student</span></h2>
+        <p>👤 Username: <strong>{{ student.username }}</strong></p>
+        <p>📧 Email: <strong>{{ student.email or 'Not provided' }}</strong></p>
+        <p>🏫 School: <strong>{{ student.school_name or 'Not provided' }}</strong></p>
+        <p>📚 Class/Grade: <strong>{{ student.class_grade or 'Not provided' }}</strong></p>
+        <p>🪪 Student ID: <strong>{{ student.student_id or 'Not provided' }}</strong></p>
+        <p>📞 Parent Contact: <strong>{{ student.parent_contact or 'Not provided' }}</strong></p>
+        <p>🎂 Date of Birth: <strong>{{ student.dob or 'Not provided' }}</strong></p>
+        <p>✅ Status: <strong style="color: {% if student.approved %}green{% else %}orange{% endif %};">
+            {% if student.approved %}Approved{% else %}Pending{% endif %}
+        </strong></p>
+    </div>
+</div>
+
+<!-- Stats -->
+<div class="stats-row">
+    <div class="stat-box">
+        <h3 style="color: #ff9800;">{{ student.points }}</h3>
+        <p>🏆 Total Points</p>
+    </div>
+    <div class="stat-box">
+        <h3 style="color: #667eea;">{{ student.level }}</h3>
+        <p>⭐ Level</p>
+    </div>
+    <div class="stat-box">
+        <h3 style="color: #ff6b35;">{{ student.current_streak or 0 }}</h3>
+        <p>🔥 Current Streak</p>
+    </div>
+    <div class="stat-box">
+        <h3 style="color: #4CAF50;">{{ lessons_completed }}</h3>
+        <p>📚 Lessons Completed</p>
+    </div>
+</div>
+
+<!-- Lessons Progress -->
+<div class="section">
+    <h3>📚 Lessons Completed <span class="count-badge">{{ progress|length }}</span></h3>
+    {% if progress %}
+    <table>
+        <tr>
+            <th>Lesson</th>
+            <th>Description</th>
+            <th>Points Earned</th>
+            <th>Completed On</th>
+        </tr>
+        {% for p in progress %}
+        <tr>
+            <td><strong>{{ p.title }}</strong></td>
+            <td>{{ p.description }}</td>
+            <td>+{{ p.points }} pts</td>
+            <td>{{ p.completed_at.strftime('%d %b %Y, %I:%M %p') }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+        <p class="empty">No lessons completed yet.</p>
+    {% endif %}
+</div>
+
+<!-- Quiz Attempts -->
+<div class="section">
+    <h3>📝 Quiz Attempts <span class="count-badge">{{ attempts|length }}</span></h3>
+    {% if attempts %}
+    <table>
+        <tr>
+            <th>Quiz Title</th>
+            <th>Question</th>
+            <th>Answer Given</th>
+            <th>Result</th>
+            <th>Attempted On</th>
+        </tr>
+        {% for a in attempts %}
+        <tr>
+            <td><strong>{{ a.title }}</strong></td>
+            <td>{{ a.question[:60] }}...</td>
+            <td>{{ a.answer }}</td>
+            <td>
+                {% if a.is_correct %}
+                <span class="correct">✅ Correct</span>
+                {% else %}
+                <span class="wrong">❌ Wrong</span>
+                {% endif %}
+            </td>
+            <td>{{ a.attempted_at.strftime('%d %b %Y, %I:%M %p') }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+        <p class="empty">No quiz attempts yet.</p>
+    {% endif %}
+</div>
+
+<!-- Certificate -->
+<div class="section">
+    <h3>🎓 Certificate</h3>
+    {% if certificate %}
+    <table>
+        <tr>
+            <th>Certificate ID</th>
+            <th>Issued Date</th>
+            <th>Action</th>
+        </tr>
+        <tr>
+            <td>{{ certificate.certificate_id }}</td>
+            <td>{{ certificate.issued_date.strftime('%d %b %Y') }}</td>
+            <td><a href="/view_certificate_admin/{{ student.id }}" target="_blank" style="color: #2196F3;">View Certificate</a></td>
+        </tr>
+    </table>
+    {% else %}
+        <p class="empty">No certificate earned yet. Student needs to complete all lessons.</p>
+    {% endif %}
+</div>
+
+</body>
+</html>

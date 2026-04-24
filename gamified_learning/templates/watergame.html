@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Marine Cleaning Game</title>
+<style>
+  body{ margin:0; font-family:Segoe UI, sans-serif; text-align:center; background:#ffffff; }
+  #sky{ height:150px; background:linear-gradient(#81d4fa,#b3e5fc); position:relative; }
+  #sun{ position:absolute; right:30px; top:18px; font-size:60px; user-select:none; }
+  #scoreBox{ position:absolute; left:20px; top:20px; background:white; padding:8px 14px; border-radius:20px; font-weight:bold; box-shadow:0 6px 18px rgba(0,0,0,.10); }
+  #sea{ height:330px; background:linear-gradient(#0277bd,#03a9f4); position:relative; overflow:hidden; transition: background 0.6s ease; }
+  .creature{ position:absolute; font-size:36px; user-select:none; }
+  .left{ animation:swimRight 12s linear infinite; }
+  .right{ animation:swimLeft 14s linear infinite; }
+  #sea.dead .creature{ animation-play-state: paused; filter: grayscale(100%); opacity:0.85; }
+  @keyframes swimRight{ from{left:-60px;} to{left:110%;} }
+  @keyframes swimLeft{ from{left:110%;} to{left:-60px;} }
+  #land{ height:170px; background:linear-gradient(#8d6e63,#6d4c41); position:relative; overflow:hidden; }
+  #hint{ position:absolute; left:14px; top:10px; color:#fff; font-weight:700; text-align:left; opacity:0.95; font-size:14px; line-height:1.2; }
+  .waste{ position:absolute; font-size:50px; cursor:grab; user-select:none; }
+  #dustbin{ position:absolute; right:30px; bottom:20px; font-size:85px; background:white; padding:12px; border-radius:20px; box-shadow:0 10px 24px rgba(0,0,0,.18); }
+  #info{ background:white; padding:18px; }
+  #message{ font-size:18px; margin: 6px 0 12px; }
+  #restart{ display:none; padding:10px 22px; border:none; border-radius:20px; background:#ff7043; color:white; font-size:16px; cursor:pointer; margin-right:10px; }
+  .back-btn{ display:inline-block; padding:10px 22px; background:#4CAF50; color:white; text-decoration:none; border-radius:20px; font-size:16px; }
+</style>
+</head>
+<body>
+
+<div id="sky">
+  <div id="sun">☀️</div>
+  <div id="scoreBox">⭐ Score: <span id="score">0</span></div>
+</div>
+
+<div id="sea" ondragover="allowDrop(event)" ondrop="dropToSea(event)">
+  <div class="creature right" style="top:40px;">🐠</div>
+  <div class="creature right" style="top:110px;animation-delay:2s;">🐟</div>
+  <div class="creature left"  style="top:180px;animation-delay:1s;">🐡</div>
+  <div class="creature right" style="top:230px;animation-delay:4s;">🦑</div>
+</div>
+
+<div id="land">
+  <div id="hint">
+    ✅ Only PLASTIC pollutes water (🧴🥤🍾🥫).<br>
+    Non-plastic (📦🍎) does not pollute.
+  </div>
+  <div class="waste" draggable="true" ondragstart="drag(event)" id="t1" data-type="plastic" style="top:78px;left:30px;">🧴</div>
+  <div class="waste" draggable="true" ondragstart="drag(event)" id="t2" data-type="plastic" style="top:95px;left:120px;">🥤</div>
+  <div class="waste" draggable="true" ondragstart="drag(event)" id="t3" data-type="plastic" style="top:75px;left:210px;">🍾</div>
+  <div class="waste" draggable="true" ondragstart="drag(event)" id="t4" data-type="plastic" style="top:95px;left:300px;">🥫</div>
+  <div class="waste" draggable="true" ondragstart="drag(event)" id="t5" data-type="other"   style="top:75px;left:390px;">📦</div>
+  <div class="waste" draggable="true" ondragstart="drag(event)" id="t6" data-type="other"   style="top:95px;left:480px;">🍎</div>
+  <div id="dustbin" ondrop="dropToBin(event)" ondragover="allowDrop(event)">🗑️</div>
+</div>
+
+<div id="info">
+  <p id="message">Drop PLASTIC into sea → pollution increases gradually 🌊</p>
+  <button id="restart" onclick="location.reload()">🔄 Restart</button>
+  <a href="/games" class="back-btn">⬅ Back to Games</a>
+</div>
+
+<script>
+  const sea = document.getElementById("sea");
+  const msg = document.getElementById("message");
+  const restartBtn = document.getElementById("restart");
+  const scoreEl = document.getElementById("score");
+  const fishLeft  = document.querySelectorAll(".left");
+  const fishRight = document.querySelectorAll(".right");
+  let score = 0;
+  let totalPlastic = document.querySelectorAll('.waste[data-type="plastic"]').length;
+  let plasticInWater = 0;
+  const cleanTop={r:2,g:119,b:189}, cleanBot={r:3,g:169,b:244};
+  const deepTop={r:0,g:26,b:51},   deepBot={r:0,g:61,b:102};
+  const baseLeftDur=12, baseRightDur=14;
+
+  function allowDrop(ev){ ev.preventDefault(); }
+  function drag(ev){ ev.dataTransfer.setData("text", ev.target.id); }
+  function lerp(a,b,t){ return a+(b-a)*t; }
+  function blend(c1,c2,t){ return {r:Math.round(lerp(c1.r,c2.r,t)),g:Math.round(lerp(c1.g,c2.g,t)),b:Math.round(lerp(c1.b,c2.b,t))}; }
+  function rgb(c){ return `rgb(${c.r},${c.g},${c.b})`; }
+
+  function updateSeaAndFish(){
+    const t = totalPlastic===0 ? 0 : Math.max(0,Math.min(1,plasticInWater/totalPlastic));
+    const top=blend(cleanTop,deepTop,t), bot=blend(cleanBot,deepBot,t);
+    sea.style.background=`linear-gradient(${rgb(top)},${rgb(bot)})`;
+    const slowFactor=lerp(1.0,2.2,t);
+    fishLeft.forEach(el=>el.style.animationDuration=(baseLeftDur*slowFactor).toFixed(2)+"s");
+    fishRight.forEach(el=>el.style.animationDuration=(baseRightDur*slowFactor).toFixed(2)+"s");
+    if(totalPlastic>0 && plasticInWater>=totalPlastic){
+      sea.classList.add("dead");
+      msg.innerText="💀 All PLASTIC is in water! Water is fully polluted and fish stopped!";
+      restartBtn.style.display="inline-block";
+    } else {
+      sea.classList.remove("dead");
+      if(plasticInWater===0) msg.innerText="✅ No plastic in water. Ocean is clean and fish are normal 🐟";
+      else msg.innerText=`⚠️ Plastic polluting ocean… (${plasticInWater}/${totalPlastic}) Put plastic into 🗑️ to clean.`;
+    }
+  }
+
+  function dropToSea(ev){
+    ev.preventDefault();
+    const id=ev.dataTransfer.getData("text");
+    const item=document.getElementById(id);
+    if(!item || item.dataset.inSea==="1") return;
+    sea.appendChild(item);
+    item.dataset.inSea="1";
+    item.style.position="absolute";
+    const rect=sea.getBoundingClientRect();
+    item.style.left=Math.max(0,Math.min(ev.clientX-rect.left-20,sea.clientWidth-50))+"px";
+    item.style.top=Math.max(0,Math.min(ev.clientY-rect.top-20,sea.clientHeight-50))+"px";
+    if(item.dataset.type==="plastic") plasticInWater++;
+    updateSeaAndFish();
+  }
+
+  function dropToBin(ev){
+    ev.preventDefault();
+    const id=ev.dataTransfer.getData("text");
+    const item=document.getElementById(id);
+    if(!item) return;
+    if(item.dataset.inSea==="1" && item.dataset.type==="plastic") plasticInWater=Math.max(0,plasticInWater-1);
+    item.remove();
+    score++;
+    scoreEl.innerText=score;
+    const remaining=document.querySelectorAll(".waste").length;
+    if(remaining===0){
+      msg.innerText="🎉 Great job! You removed all waste. Ocean is safe again 🌊";
+      restartBtn.style.display="inline-block";
+      plasticInWater=0;
+    }
+    updateSeaAndFish();
+  }
+
+  updateSeaAndFish();
+</script>
+</body>
+</html>
